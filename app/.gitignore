@@ -1,0 +1,27 @@
+# App build artifacts
+/_build/
+/deps/
+/.elixir_ls/
+/.fetch
+
+# Generated assets
+/priv/static/assets/
+/priv/static/cache_manifest.json
+/assets/node_modules/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Elixir/Erlang
+*.ez
+*.beam
+erl_crash.dump
+
+# Uploads
+/priv/uploads/
+
+# Test coverage
+/cover/
+/doc/
