@@ -50,14 +50,16 @@ jobs:
           otp-version: ${{ matrix.otp }}
 
       - name: Restore dependencies cache
-        uses: actions/cache@v4
+        id: deps-cache-restore
+        uses: actions/cache/restore@v4
         with:
           path: app/deps
           key: ${{ runner.os }}-mix-${{ hashFiles('app/mix.lock') }}
           restore-keys: ${{ runner.os }}-mix-
 
       - name: Restore build cache
-        uses: actions/cache@v4
+        id: build-cache-restore
+        uses: actions/cache/restore@v4
         with:
           path: app/_build
           key: ${{ runner.os }}-build-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('app/mix.lock') }}
@@ -80,3 +82,17 @@ jobs:
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/app_test
           MIX_ENV: test
+
+      - name: Save dependencies cache
+        uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: app/deps
+          key: ${{ runner.os }}-mix-${{ hashFiles('app/mix.lock') }}
+
+      - name: Save build cache
+        uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: app/_build
+          key: ${{ runner.os }}-build-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('app/mix.lock') }}
