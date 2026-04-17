@@ -87,7 +87,7 @@ Phoenix emits these event namespaces:
 | Namespace              | Source                          |
 |------------------------|---------------------------------|
 | `[:phoenix, :*]`       | Phoenix framework               |
-| `[:demo, :*]`          | Custom application events       |
+| `[:app, :*]`          | Custom application events       |
 | `[:vm, :*]`            | Erlang VM metrics               |
 | `[:ecto, :*]`          | Database queries                |
 
@@ -99,7 +99,7 @@ Phoenix emits these event namespaces:
 
 - **Formatter**: Use `mix format` (config in `app/.formatter.exs`)
 - **Credo**: Run `mix credo` if available
-- **Module naming**: `DemoWeb.*` for web layer, `Demo.*` for contexts
+- **Module naming**: `AppWeb.*` for web layer, `App.*` for contexts
 - **Function naming**: `snake_case`
 - **Private functions**: Prefixed with `_` or marked with `@doc false`
 
@@ -117,6 +117,17 @@ Phoenix emits these event namespaces:
 - `mix phx.gen.auth` - Generate authentication
 
 **When to generate manually**: Only when the generator cannot produce the required structure, or for custom business logic that doesn't fit standard patterns.
+
+### Comment Maintenance
+
+**Rule**: When editing code that has associated comments, always check if the comments need to be updated as well.
+
+**Rationale**: Comments often describe implementation details, library choices, or configuration values. When these change, comments can become misleading or outdated.
+
+**Examples**:
+- When changing a library/module reference (e.g., `Jason` → `JSON`), update comment from `# Use Jason for...` to `# Use JSON for...`
+- When changing a configuration value, update inline comments that document the value
+- When refactoring function logic, update `@doc` strings that describe the behavior
 
 ### Configuration Management
 
@@ -179,11 +190,11 @@ Phoenix emits these event namespaces:
 
 ```
 app/test/
-├── demo/              # Context tests
-├── demo_web/          # Web layer tests
+├── app/              # Context tests
+├── app_web/          # Web layer tests
 │   ├── controllers/
 │   └── live/
-└── support/           # Test helpers
+└── support/          # Test helpers
 ```
 
 **Rule**: Match test file structure to `lib/` structure.
@@ -213,7 +224,7 @@ priv/repo/migrations/
 
 ### Ecto Conventions
 
-- **Contexts**: Group related schemas (e.g., `Demo.Accounts`, `Demo.Blog`)
+- **Contexts**: Group related schemas (e.g., `App.Accounts`, `App.Blog`)
 - **Schemas**: Define changesets for all public functions
 - **Indexes**: Add for foreign keys and frequently queried fields
 
@@ -263,17 +274,17 @@ priv/repo/migrations/
 
 ### Add a New Page
 
-1. Create controller: `app/lib/demo_web/controllers/new_controller.ex`
-2. Create view template: `app/lib/demo_web/controllers/new_html.ex`
-3. Add route: `app/lib/demo_web/router.ex`
-4. Add test: `app/test/demo_web/controllers/new_controller_test.exs`
+1. Create controller: `app/lib/app_web/controllers/new_controller.ex`
+2. Create view template: `app/lib/app_web/controllers/new_html.ex`
+3. Add route: `app/lib/app_web/router.ex`
+4. Add test: `app/test/app_web/controllers/new_controller_test.exs`
 
 ### Add a Database Table
 
 1. Generate migration: `cd app && mix ecto.gen.migration create_table_name`
 2. Define migration in generated file
-3. Create schema: `app/lib/demo/table_name.ex`
-4. Add to context: `app/lib/demo/context_name.ex`
+3. Create schema: `app/lib/app/table_name.ex`
+4. Add to context: `app/lib/app/context_name.ex`
 5. Run migration: `mix ecto.migrate`
 
 ### Update Docker Images
@@ -309,8 +320,9 @@ priv/repo/migrations/
 When working on this project, refer to:
 
 1. **README.md** - User-facing documentation
-2. **AGENTS.md** - This file (AI agent context)
-3. **Official docs**:
+2. **AGENTS.md** (this file) - Project-wide AI agent context
+3. **app/AGENTS.md** - Phoenix-specific guidelines (always check when working in the Phoenix app)
+4. **Official docs**:
    - Phoenix: https://hexdocs.pm/phoenix/
    - Ecto: https://hexdocs.pm/ecto/
    - OpenTelemetry: https://opentelemetry.io/docs/

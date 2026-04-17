@@ -1,2 +1,6 @@
 # Project-specific ignores
 # OS and IDE files are handled by global gitignore
+
+# Local data directories - keep structure but ignore contents
+/data/postgres/*
+!/data/postgres/.keep
