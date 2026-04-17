@@ -103,6 +103,21 @@ Phoenix emits these event namespaces:
 - **Function naming**: `snake_case`
 - **Private functions**: Prefixed with `_` or marked with `@doc false`
 
+### Code Generation
+
+**Rule**: When possible, always rely on Phoenix generators rather than generating code manually.
+
+**Rationale**: Generators ensure consistent file structure, naming conventions, and boilerplate that aligns with Phoenix best practices. They also reduce the risk of human error.
+
+**Preferred Generators**:
+- `mix phx.gen.context` - Generate context with schema and migration
+- `mix phx.gen.html` - Generate controller, views, templates, and tests
+- `mix phx.gen.json` - Generate JSON API controller
+- `mix ecto.gen.migration` - Generate database migrations
+- `mix phx.gen.auth` - Generate authentication
+
+**When to generate manually**: Only when the generator cannot produce the required structure, or for custom business logic that doesn't fit standard patterns.
+
 ### Configuration Management
 
 | Environment | Config File             | Notes                      |
