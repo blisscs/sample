@@ -118,6 +118,17 @@ Phoenix emits these event namespaces:
 
 **When to generate manually**: Only when the generator cannot produce the required structure, or for custom business logic that doesn't fit standard patterns.
 
+### Comment Maintenance
+
+**Rule**: When editing code that has associated comments, always check if the comments need to be updated as well.
+
+**Rationale**: Comments often describe implementation details, library choices, or configuration values. When these change, comments can become misleading or outdated.
+
+**Examples**:
+- When changing a library/module reference (e.g., `Jason` → `JSON`), update comment from `# Use Jason for...` to `# Use JSON for...`
+- When changing a configuration value, update inline comments that document the value
+- When refactoring function logic, update `@doc` strings that describe the behavior
+
 ### Configuration Management
 
 | Environment | Config File             | Notes                      |
