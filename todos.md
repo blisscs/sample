@@ -12,7 +12,7 @@ This document tracks the steps needed to initialize the Phoenix application and 
 **Steps:**
 1. Ensure Elixir 1.19.5 and Erlang 28.4.1 are installed
 2. Install Phoenix 1.8.5 archive
-3. Run `mix phx.new . --app demo` inside `app/` folder
+3. Run `mix phx.new .` inside `app/` folder (uses directory name as app name)
 4. Configure database settings in `config/dev.exs`
 5. Update `.tool-versions` in app folder
 
@@ -61,9 +61,9 @@ This document tracks the steps needed to initialize the Phoenix application and 
 **Files to be modified/created:**
 - `app/mix.exs`
 - `app/config/runtime.exs`
-- `app/lib/demo_web/controllers/health_controller.ex`
-- `app/lib/demo_web/controllers/page_controller.ex`
-- `app/lib/demo/telemetry.ex`
+- `app/lib/app_web/controllers/health_controller.ex`
+- `app/lib/app_web/controllers/page_controller.ex`
+- `app/lib/app/telemetry.ex`
 
 ---
 
@@ -79,10 +79,10 @@ This document tracks the steps needed to initialize the Phoenix application and 
 4. Add routes in router
 
 **Files to be created:**
-- `app/lib/demo_web/controllers/page_controller.ex`
-- `app/lib/demo_web/controllers/health_controller.ex`
-- `app/lib/demo_web/controllers/page_html.ex`
-- `app/lib/demo_web/controllers/page_html/index.html.heex`
+- `app/lib/app_web/controllers/page_controller.ex`
+- `app/lib/app_web/controllers/health_controller.ex`
+- `app/lib/app_web/controllers/page_html.ex`
+- `app/lib/app_web/controllers/page_html/index.html.heex`
 
 ---
 
