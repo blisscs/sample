@@ -214,19 +214,21 @@ kamal deploy
 ### Ports
 
 - Phoenix: 4000
-- PostgreSQL: 5432
+- PostgreSQL: 5433 (Docker)
 - Grafana: 3000 (when added)
 - ClickHouse: 8123 (HTTP), 9000 (Native) (when added)
 - OTel Collector: 4317 (gRPC), 4318 (HTTP) (when added)
 
-### Database Connection (Development)
+### Database Connection (Development & Test)
 
 ```
 Host: localhost
-Port: 5432
-Database: app_dev
+Port: 5433
 Username: postgres
 Password: postgres
+
+Development Database: app_dev
+Test Database: app_test
 ```
 
 ## Notes
