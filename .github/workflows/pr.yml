@@ -53,7 +53,7 @@ jobs:
         id: deps-cache-restore
         uses: actions/cache/restore@v4
         with:
-          path: app/deps
+          path: ${{ github.workspace }}/app/deps
           key: ${{ runner.os }}-mix-${{ hashFiles('app/mix.lock') }}
           restore-keys: ${{ runner.os }}-mix-
 
@@ -61,7 +61,7 @@ jobs:
         id: build-cache-restore
         uses: actions/cache/restore@v4
         with:
-          path: app/_build
+          path: ${{ github.workspace }}/app/_build
           key: ${{ runner.os }}-build-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('app/mix.lock') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ matrix.otp }}-${{ matrix.elixir }}-
@@ -87,12 +87,12 @@ jobs:
         uses: actions/cache/save@v4
         if: always()
         with:
-          path: app/deps
+          path: ${{ github.workspace }}/app/deps
           key: ${{ runner.os }}-mix-${{ hashFiles('app/mix.lock') }}
 
       - name: Save build cache
         uses: actions/cache/save@v4
         if: always()
         with:
-          path: app/_build
+          path: ${{ github.workspace }}/app/_build
           key: ${{ runner.os }}-build-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('app/mix.lock') }}
