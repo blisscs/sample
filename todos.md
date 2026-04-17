@@ -5,39 +5,68 @@ This document tracks the steps needed to initialize the Phoenix application and 
 ## Phase 1: Project Initialization
 
 ### Todo 1: Initialize Phoenix Application
-- **Status**: pending
+- **Status**: completed
 
 **Description:** Create a new Phoenix 1.8.5 application in the `app/` folder.
 
 **Steps:**
-1. Ensure Elixir 1.19.5 and Erlang 28.4.1 are installed
-2. Install Phoenix 1.8.5 archive
-3. Run `mix phx.new . --app demo` inside `app/` folder
-4. Configure database settings in `config/dev.exs`
-5. Update `.tool-versions` in app folder
+1. ✅ Ensure Elixir 1.19.5 and Erlang 28.4.1 are installed
+2. ✅ Install Phoenix 1.8.5 archive
+3. ✅ Run `mix phx.new .` inside `app/` folder (uses directory name as app name)
+4. ✅ Configure database settings in `config/dev.exs`
+5. ✅ Update `.tool-versions` in app folder
+6. ✅ Configure `datetime_usec` for generators
+7. ✅ Configure `JSON` module for JSON parsing
 
-**Files to be created:**
+**Files created:**
 - Entire Phoenix project structure in `app/`
 
 ---
 
-### Todo 2: Setup Docker Compose for Infrastructure
-- **Status**: pending
+### Todo 2: Setup PostgreSQL via Docker Compose
+- **Status**: completed
 
-**Description:** Configure Docker Compose for local development infrastructure (PostgreSQL, ClickHouse, Grafana, OTel Collector).
+**Description:** Configure Docker Compose for PostgreSQL database.
 
 **Steps:**
-1. Create `docker-compose.yml` with services:
-   - PostgreSQL 18.3
-   - ClickHouse 26.3 LTS
-   - Grafana (latest)
-   - OpenTelemetry Collector
+1. ✅ Create `docker-compose.yml` with PostgreSQL service
+2. ✅ Configure environment variables (POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB)
+3. ✅ Add healthcheck for PostgreSQL
+4. ✅ Configure named volume for data persistence
+
+**Files created:**
+- `docker-compose.yml`
+
+**Usage:**
+```bash
+# Start PostgreSQL
+docker-compose up -d postgres
+
+# Database connection
+# Host: localhost
+# Port: 5432
+# Database: app_dev
+# Username: postgres
+# Password: postgres
+```
+
+---
+
+### Todo 3: Setup Observability Stack (ClickHouse, Grafana, OTel)
+- **Status**: pending
+
+**Description:** Configure Docker Compose for observability infrastructure (ClickHouse, Grafana, OTel Collector).
+
+**Steps:**
+1. Add ClickHouse 26.3 LTS to `docker-compose.yml`
 2. Configure ClickHouse with init migrations
-3. Configure Grafana with auto-provisioned datasources and dashboards
-4. Configure OTel Collector with ClickHouse exporter
+3. Add Grafana (latest) to `docker-compose.yml`
+4. Configure Grafana with auto-provisioned datasources and dashboards
+5. Add OpenTelemetry Collector to `docker-compose.yml`
+6. Configure OTel Collector with ClickHouse exporter
 
 **Files to be created/modified:**
-- `docker-compose.yml`
+- `docker-compose.yml` (add services)
 - `clickhouse/migrations/init.sql`
 - `clickhouse/config/*.xml`
 - `grafana/provisioning/datasources/clickhouse.yml`
@@ -46,7 +75,7 @@ This document tracks the steps needed to initialize the Phoenix application and 
 
 ---
 
-### Todo 3: Configure Phoenix for Telemetry
+### Todo 4: Configure Phoenix for Telemetry
 - **Status**: pending
 
 **Description:** Set up OpenTelemetry instrumentation in Phoenix application.
@@ -61,13 +90,13 @@ This document tracks the steps needed to initialize the Phoenix application and 
 **Files to be modified/created:**
 - `app/mix.exs`
 - `app/config/runtime.exs`
-- `app/lib/demo_web/controllers/health_controller.ex`
-- `app/lib/demo_web/controllers/page_controller.ex`
-- `app/lib/demo/telemetry.ex`
+- `app/lib/app_web/controllers/health_controller.ex`
+- `app/lib/app_web/controllers/page_controller.ex`
+- `app/lib/app/telemetry.ex`
 
 ---
 
-### Todo 4: Create Basic Homepage
+### Todo 5: Create Basic Homepage
 - **Status**: pending
 
 **Description:** Create a simple homepage with health check endpoint.
@@ -79,14 +108,14 @@ This document tracks the steps needed to initialize the Phoenix application and 
 4. Add routes in router
 
 **Files to be created:**
-- `app/lib/demo_web/controllers/page_controller.ex`
-- `app/lib/demo_web/controllers/health_controller.ex`
-- `app/lib/demo_web/controllers/page_html.ex`
-- `app/lib/demo_web/controllers/page_html/index.html.heex`
+- `app/lib/app_web/controllers/page_controller.ex`
+- `app/lib/app_web/controllers/health_controller.ex`
+- `app/lib/app_web/controllers/page_html.ex`
+- `app/lib/app_web/controllers/page_html/index.html.heex`
 
 ---
 
-### Todo 5: Setup Kamal Deployment Configuration
+### Todo 6: Setup Kamal Deployment Configuration
 - **Status**: pending
 
 **Description:** Configure Kamal for deployment to VPS.
@@ -106,7 +135,7 @@ This document tracks the steps needed to initialize the Phoenix application and 
 
 ## Phase 2: First Deployment
 
-### Todo 6: Test Local Development Setup
+### Todo 7: Test Local Development Setup
 - **Status**: pending
 
 **Description:** Verify everything works locally before deployment.
@@ -121,7 +150,7 @@ This document tracks the steps needed to initialize the Phoenix application and 
 
 ---
 
-### Todo 7: Configure Production Secrets
+### Todo 8: Configure Production Secrets
 - **Status**: pending
 
 **Description:** Set up production environment variables.
@@ -134,7 +163,7 @@ This document tracks the steps needed to initialize the Phoenix application and 
 
 ---
 
-### Todo 8: First Kamal Deployment
+### Todo 9: First Kamal Deployment
 - **Status**: pending
 
 **Description:** Deploy the application to VPS using Kamal.
@@ -150,14 +179,14 @@ This document tracks the steps needed to initialize the Phoenix application and 
 
 ## Phase 3: Post-Deployment (Future Todos)
 
-### Todo 9: Add User Authentication (Future)
+### Todo 10: Add User Authentication (Future)
 - **Status**: pending
 
 Add user authentication system with login/signup.
 
 ---
 
-### Todo 10: Add Todos Feature (Future)
+### Todo 11: Add Todos Feature (Future)
 - **Status**: pending
 
 Add a full CRUD todos feature with detail view.
@@ -170,7 +199,7 @@ Add a full CRUD todos feature with detail view.
 
 ```bash
 # Start infrastructure
-docker-compose up -d postgres clickhouse grafana otel-collector
+docker-compose up -d postgres
 
 # Setup Phoenix
 cd app
@@ -185,10 +214,20 @@ kamal deploy
 ### Ports
 
 - Phoenix: 4000
-- Grafana: 3000
 - PostgreSQL: 5432
-- ClickHouse: 8123 (HTTP), 9000 (Native)
-- OTel Collector: 4317 (gRPC), 4318 (HTTP)
+- Grafana: 3000 (when added)
+- ClickHouse: 8123 (HTTP), 9000 (Native) (when added)
+- OTel Collector: 4317 (gRPC), 4318 (HTTP) (when added)
+
+### Database Connection (Development)
+
+```
+Host: localhost
+Port: 5432
+Database: app_dev
+Username: postgres
+Password: postgres
+```
 
 ## Notes
 
@@ -196,4 +235,4 @@ kamal deploy
 - Never commit secrets to repository
 - All infrastructure runs in Docker except Phoenix (local dev)
 - Phoenix runs in Docker for production deployment
-
+- Check `app/AGENTS.md` when working in the Phoenix application
