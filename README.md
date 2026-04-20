@@ -14,10 +14,10 @@ A production-ready demo application showcasing modern observability stack with E
 │    └── Phoenix 1.8.5 (local)                                    │
 │                                                                 │
 │  Docker Compose:                                                │
-│    ├── PostgreSQL 18.3 (port 5432)                             │
-│    ├── ClickHouse 26.3 LTS (port 8123/9000)                  │
-│    ├── OpenTelemetry Collector (port 4317/4318)              │
-│    └── Grafana 13.x (port 3000)                                │
+│    ├── PostgreSQL 18.3 (port 5433)                             │
+│    ├── ClickHouse 26.3 LTS (port 8124/9001)                  │
+│    ├── OpenTelemetry Collector (port 4319/4320)              │
+│    └── Grafana 13.x (port 3001)                                │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
@@ -135,12 +135,12 @@ mix phx.server
 | Service   | URL                     | Credentials               |
 |-----------|-------------------------|---------------------------|
 | Phoenix   | http://localhost:4000   | -                         |
-| Grafana   | http://localhost:3000   | admin/admin               |
+| Grafana   | http://localhost:3001   | admin/admin               |
 | Health    | http://localhost:4000/health | -                     |
 
 ### 4. View Telemetry in Grafana
 
-1. Open http://localhost:3000
+1. Open http://localhost:3001
 2. Login with `admin/admin`
 3. Navigate to Dashboards → Phoenix Application
 4. See real-time metrics from your Phoenix app
@@ -237,8 +237,8 @@ kamal deploy
 | `DATABASE_URL`          | postgres://...        | Required             |
 | `SECRET_KEY_BASE`       | auto-generated        | Required (64 chars)  |
 | `PHX_HOST`              | localhost             | Your domain          |
-| `OTEL_EXPORTER_ENDPOINT`| http://localhost:4318 | http://otel-collector|
-| `CLICKHOUSE_URL`        | http://localhost:8123 | Required             |
+| `OTEL_EXPORTER_ENDPOINT`| http://localhost:4320 | http://otel-collector|
+| `CLICKHOUSE_URL`        | http://localhost:8124 | Required             |
 | `GRAFANA_ADMIN_PASSWORD`| admin                 | Required             |
 
 ### Local Development

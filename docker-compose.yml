@@ -16,3 +16,46 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:26.3
+    container_name: demo-clickhouse
+    restart: unless-stopped
+    ports:
+      - "8124:8123"
+      - "9001:9000"
+    volumes:
+      - ./clickhouse/migrations:/docker-entrypoint-initdb.d
+      - ./clickhouse/config:/etc/clickhouse-server/config.d
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:8123/"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: demo-otel-collector
+    restart: unless-stopped
+    ports:
+      - "4319:4317"
+      - "4320:4318"
+    volumes:
+      - ./otel/otel-collector-config.yml:/etc/otelcol-contrib/config.yaml
+    command: ["--config=/etc/otelcol-contrib/config.yaml"]
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: demo-grafana
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+
