@@ -11,9 +11,7 @@ processors:
 
 exporters:
   clickhouse:
-    endpoint: clickhouse:8123
-    database: default
-    table: otel_metrics
+    endpoint: http://clickhouse:8123
 
 service:
   pipelines:
