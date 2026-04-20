@@ -28,7 +28,9 @@ services:
       - "8124:8123"
       - "9001:9000"
     volumes:
+      - ./clickhouse/data:/var/lib/clickhouse
       - ./clickhouse/migrations:/docker-entrypoint-initdb.d
+      - ./clickhouse/config:/etc/clickhouse-server/config.d
     healthcheck:
       test: ["CMD", "wget", "--spider", "http://localhost:8123/"]
       interval: 5s
@@ -56,10 +58,11 @@ services:
     ports:
       - "3001:3000"
     volumes:
+      - ./grafana/data:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning
     environment:
       - CLICKHOUSE_USERNAME=${CLICKHOUSE_USERNAME:-default}
-      - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD:-}
+      - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD:-clickhouse}
     depends_on:
       clickhouse:
         condition: service_healthy
