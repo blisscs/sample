@@ -4,5 +4,5 @@ datasources:
     type: alextrv/clickhouse-datasource
     access: proxy
     url: http://clickhouse:8123
-    username: default
-    password: ""
+    username: ${CLICKHOUSE_USERNAME}
+    password: ${CLICKHOUSE_PASSWORD}
