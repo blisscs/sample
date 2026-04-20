@@ -11,7 +11,7 @@ processors:
 
 exporters:
   clickhouse:
-    endpoint: http://clickhouse:8123
+    endpoint: http://default:clickhouse@clickhouse:8123
 
 service:
   pipelines:

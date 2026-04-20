@@ -5,4 +5,4 @@ datasources:
     access: proxy
     url: http://clickhouse:8123
     username: ${CLICKHOUSE_USERNAME:-default}
-    password: ${CLICKHOUSE_PASSWORD:-}
+    password: ${CLICKHOUSE_PASSWORD:-clickhouse}

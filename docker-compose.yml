@@ -21,12 +21,14 @@ services:
     image: clickhouse/clickhouse-server:26.3
     container_name: demo-clickhouse
     restart: unless-stopped
+    environment:
+      - CLICKHOUSE_USER=default
+      - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD:-clickhouse}
     ports:
       - "8124:8123"
       - "9001:9000"
     volumes:
       - ./clickhouse/migrations:/docker-entrypoint-initdb.d
-      - ./clickhouse/config:/etc/clickhouse-server/config.d
     healthcheck:
       test: ["CMD", "wget", "--spider", "http://localhost:8123/"]
       interval: 5s
