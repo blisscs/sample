@@ -4,6 +4,8 @@
 # Local data directories - keep structure but ignore contents
 /data/postgres/*
 !/data/postgres/.keep
+/clickhouse/data/*
+!/clickhouse/data/.keep
 
 # Environment files with secrets
 .env.local

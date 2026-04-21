@@ -65,7 +65,14 @@ defmodule App.MixProject do
       {:gettext, "~> 1.0"},
       # JSON parsing uses Elixir's built-in JSON module (since 1.18+)
       {:dns_cluster, "~> 0.2.0"},
-      {:bandit, "~> 1.5"}
+      {:bandit, "~> 1.5"},
+      # OpenTelemetry dependencies
+      {:opentelemetry, "~> 1.3"},
+      {:opentelemetry_api, "~> 1.2"},
+      {:opentelemetry_exporter, "~> 1.6"},
+      {:opentelemetry_telemetry, "~> 1.0"},
+      {:opentelemetry_phoenix, "~> 1.2"},
+      {:opentelemetry_ecto, "~> 1.2"}
     ]
   end
 

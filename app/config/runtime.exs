@@ -22,6 +22,12 @@ end
 
 config :app, AppWeb.Endpoint, http: [port: String.to_integer(System.get_env("PORT", "4000"))]
 
+# OpenTelemetry endpoint configuration
+otel_endpoint = System.get_env("OTEL_EXPORTER_ENDPOINT", "http://localhost:4320")
+
+config :opentelemetry_exporter,
+  otlp_endpoint: otel_endpoint
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||

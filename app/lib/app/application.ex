@@ -7,6 +7,10 @@ defmodule App.Application do
 
   @impl true
   def start(_type, _args) do
+    # Attach OpenTelemetry instrumentation
+    OpentelemetryEcto.setup([:app, :repo])
+    OpentelemetryPhoenix.setup()
+
     children = [
       AppWeb.Telemetry,
       App.Repo,
