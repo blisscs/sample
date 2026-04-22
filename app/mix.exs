@@ -73,6 +73,7 @@ defmodule App.MixProject do
       {:opentelemetry_telemetry, "~> 1.0"},
       {:opentelemetry_phoenix, "~> 1.2"},
       {:opentelemetry_ecto, "~> 1.2"},
+      {:logger_backends, "~> 1.0"},
       # ClickHouse logger backend (bridged via LoggerBackends for Elixir 1.15+)
       {:clickhouse_logger, "~> 0.1.0"}
     ]

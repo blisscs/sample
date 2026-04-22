@@ -281,6 +281,8 @@ priv/repo/migrations/
 3. Is the license compatible?
 4. Can we achieve the same with standard library?
 
+**Rule**: When using `Req`, use `retry: false` instead of the deprecated `retry: :never`. The `:never` atom was deprecated in Req 0.5.x in favour of `false`.
+
 ## Common Tasks
 
 ### Add a New Page

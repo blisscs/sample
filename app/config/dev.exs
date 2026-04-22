@@ -74,12 +74,12 @@ config :app, dev_routes: true
 # Do not include metadata nor timestamps in development logs
 config :logger, :default_formatter, format: "[$level] $message\n"
 
-# ClickHouse logger backend (always enabled in dev)
-config :logger,
-  backends: [:console, ClickhouseLogger]
+# ClickHouse logger backend (added via LoggerBackends.add in application startup)
+# :backends is deprecated in Elixir 1.15+; see App.Application.start/2
 
 config :logger, ClickhouseLogger,
-  base_uri: "http://localhost:8124",
+  client: App.ClickhouseLoggerClient,
+  base_uri: "http://default:clickhouse@localhost:8124",
   database: "logs",
   fields: [
     ts: :timestamp,
