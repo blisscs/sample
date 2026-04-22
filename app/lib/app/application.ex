@@ -7,6 +7,14 @@ defmodule App.Application do
 
   @impl true
   def start(_type, _args) do
+    # Attach OpenTelemetry instrumentation
+    OpentelemetryEcto.setup([:app, :repo])
+    OpentelemetryPhoenix.setup()
+
+    if Application.get_env(:app, :clickhouse_logger_enabled, true) do
+      LoggerBackends.add(ClickhouseLogger)
+    end
+
     children = [
       AppWeb.Telemetry,
       App.Repo,

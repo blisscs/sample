@@ -2,6 +2,16 @@
 
 This file contains project-specific context and conventions for AI agents working on this codebase.
 
+## Agent Communication Principles
+
+**Rule**: Do not hallucinate or fabricate answers when the correct information cannot be confidently found.
+
+If, after a reasonable search, the answer remains unclear or uncertain, **ask the user** for clarification rather than guessing. Always state what was checked and what specifically is missing.
+
+**Rule**: Respect the user's time. Prolonged "thinking" or internal deliberation without providing feedback should be avoided. If an operation requires significant investigation, provide a brief status update or ask the user before continuing.
+
+**Rule**: Do not make dummy edits. Only change files where functional or meaningful changes are required. Avoid whitespace, formatting, typo fixes in comments, or any non-substantive modifications that inflate diffs and distract from the actual changes.
+
 ## Project Overview
 
 **Type**: Demo/Production-Ready Application  
@@ -249,6 +259,7 @@ priv/repo/migrations/
 | Histogram   | Duration distributions      | otel_metrics        |
 | Gauge       | Point-in-time values        | otel_metrics        |
 | Traces      | Request traces              | otel_traces         |
+| Logs        | Application logs            | logs                |
 
 ## Security Considerations
 
@@ -269,6 +280,8 @@ priv/repo/migrations/
 2. Does it have good documentation?
 3. Is the license compatible?
 4. Can we achieve the same with standard library?
+
+**Rule**: When using `Req`, use `retry: false` instead of the deprecated `retry: :never`. The `:never` atom was deprecated in Req 0.5.x in favour of `false`.
 
 ## Common Tasks
 

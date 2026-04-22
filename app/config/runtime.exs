@@ -22,7 +22,35 @@ end
 
 config :app, AppWeb.Endpoint, http: [port: String.to_integer(System.get_env("PORT", "4000"))]
 
+# OpenTelemetry endpoint configuration
+otel_endpoint = System.get_env("OTEL_EXPORTER_ENDPOINT", "http://localhost:4320")
+
+config :opentelemetry_exporter,
+  otlp_endpoint: otel_endpoint
+
 if config_env() == :prod do
+  # ClickHouse logger backend configuration (settings only; add backend
+  # via LoggerBackends.add(ClickhouseLogger) or legacy :backends when needed)
+  if System.get_env("CLICKHOUSE_LOGGER_ENABLED", "true") == "true" do
+    clickhouse_url =
+      System.get_env("CLICKHOUSE_LOGGER_URL") ||
+        System.get_env("CLICKHOUSE_URL", "http://localhost:8123")
+
+    config :logger, ClickhouseLogger,
+      base_uri: clickhouse_url,
+      database: "logs",
+      fields: [
+        ts: :timestamp,
+        level: {App.ClickhouseLoggerHelper, :level_to_int, :uint8},
+        msg: :message,
+        module: {:meta, :module, :string},
+        function: {:meta, :function, :string},
+        file: {:meta, :file, :string},
+        line: {:meta, :line, :uint32},
+        request_id: {:meta, :request_id, :string}
+      ]
+  end
+
   database_url =
     System.get_env("DATABASE_URL") ||
       raise """

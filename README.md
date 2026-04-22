@@ -182,11 +182,11 @@ The application is pre-configured with OpenTelemetry. To add custom telemetry:
 ```
 Phoenix App ──OTLP/HTTP──► OpenTelemetry Collector ──ClickHouse Exporter──► ClickHouse
                               (otel/ folder)                                      │
-                                                                                  ▼
-                                                                           ┌─────────────┐
-                                                                           │   Grafana   │
-                                                                           │  (Dashboard)│
-                                                                           └─────────────┘
+                                                                                   ▼
+                                                                            ┌─────────────┐
+                                                                            │   Grafana   │
+                                                                            │  (Dashboard)│
+                                                                            └─────────────┘
 ```
 
 ### Collected Metrics
@@ -195,6 +195,195 @@ Phoenix App ──OTLP/HTTP──► OpenTelemetry Collector ──ClickHouse Ex
 - **VM Metrics**: Memory usage, scheduler stats, process counts
 - **Custom Business Metrics**: Health check counts, homepage visits
 - **Database Metrics**: Ecto query durations
+
+## Logging Architecture
+
+This project collects logs through two independent paths:
+
+1. **Application Logs** (`clickhouse_logger`): Elixir Logger backend sends logs directly to ClickHouse via HTTP
+2. **Telemetry/Traces** (OpenTelemetry): Metrics and traces via OTel Collector → ClickHouse
+
+### Log Data Flow
+
+```
+Phoenix App ──Logger Backend──► ClickHouse (logs DB)
+     │
+     └───OTLP/HTTP──► OTel Collector ──► ClickHouse (default DB)
+                              │
+                              └─── Metrics, Traces, Exponential Histograms
+```
+
+### ClickHouse Databases and Tables
+
+| Database | Table | Purpose | Source |
+|----------|-------------|----------|---------|
+| `logs` | `logs` | Application logs (level, message, module, file, line, request_id) | `clickhouse_logger` |
+| `default` | `otel_metrics_*` | Counter, gauge, histogram, summary metrics | OTel Collector |
+| `default` | `otel_traces` | Distributed traces (spans, trace IDs) | OTel Collector |
+| `default` | `otel_logs` | OpenTelemetry logs (if configured) | OTel Collector |
+
+### ClickHouse Logs Table Schema
+
+```sql
+-- logs.logs (Application logs from clickhouse_logger)
+CREATE TABLE logs.logs (
+    ts        UInt64,    -- timestamp in milliseconds
+    level     UInt8,     -- 0=debug, 1=info, 2=warn, 3=error
+    msg       String,    -- log message
+    module    String,    -- Elixir module name
+    function  String,    -- function name
+    file      String,    -- source file path
+    line      UInt32,    -- line number
+    request_id String    -- Phoenix request ID
+)
+ENGINE = MergeTree()
+ORDER BY ts;
+```
+
+## Viewing Logs in Grafana
+
+### Prerequisites
+
+Infrastructure services must be running:
+
+```bash
+docker compose up -d postgres clickhouse grafana
+```
+
+Verify the datasource is provisioned:
+
+```bash
+curl -s http://admin:admin@localhost:3001/api/datasources | grep -o '"name":"[^"]*"'
+# Expected: "name":"ClickHouse"
+```
+
+If the datasource is missing, restart Grafana: `docker compose restart grafana`
+
+### 1. Start Phoenix (to generate logs)
+
+```bash
+cd app
+mix deps.get
+mix ecto.setup     # if not already done
+mix phx.server
+```
+
+Wait ~10 seconds (dev buffer timeout) for logs to flush to ClickHouse, then visit `http://localhost:4000` to generate traffic.
+
+### 2. Verify Data in ClickHouse
+
+```bash
+docker exec demo-clickhouse clickhouse-client --query '
+  SELECT count() FROM logs.logs
+'
+# Expect a positive number after Phoenix has run briefly
+```
+
+### 3. Create Dashboard via UI (Manual)
+
+1. Open **http://localhost:3001** → login `admin` / `admin`
+2. Go to **+ → Dashboard → Add visualization**
+3. Select datasource: **ClickHouse**
+4. Build panels — suggested queries below
+
+#### Panel A: Log Volume (Time Series)
+
+- **Query** (raw SQL):
+
+```sql
+SELECT toDateTime(ts / 1000) as t, count() as cnt
+FROM logs.logs
+WHERE ts >= (now() - INTERVAL 1 HOUR)
+GROUP BY t
+ORDER BY t
+```
+
+- **Visualization**: Time series
+- Set **X-axis** to field `t`, **Y-axis** to field `cnt`
+
+#### Panel B: Log Level Distribution (Pie Chart)
+
+- **Query**:
+
+```sql
+SELECT
+  multiIf(level = 0, 'debug', level = 1, 'info', level = 2, 'warn', level = 3, 'error', 'other') as level_name,
+  count() as cnt
+FROM logs.logs
+WHERE ts >= (now() - INTERVAL 1 HOUR)
+GROUP BY level_name
+```
+
+- **Visualization**: Pie chart
+- Set **Value** to `cnt`, **Name** to `level_name`
+
+#### Panel C: Latest Logs (Logs / Table)
+
+- **Query**:
+
+```sql
+SELECT
+  toDateTime(ts / 1000) as timestamp,
+  multiIf(level = 0, 'debug', level = 1, 'info', level = 2, 'warn', level = 3, 'error', 'other') as level,
+  msg as message,
+  module,
+  file,
+  line,
+  request_id
+FROM logs.logs
+WHERE ts >= (now() - INTERVAL 1 HOUR)
+ORDER BY ts DESC
+LIMIT 100
+```
+
+- **Visualization**: Table (or Logs panel if available)
+- Add **Value mappings** for `level` field: `debug` = blue, `info` = green, `warn` = yellow, `error` = red
+
+#### Panel D: Top Error Modules (Table)
+
+- **Query**:
+
+```sql
+SELECT module, count() as cnt
+FROM logs.logs
+WHERE ts >= (now() - INTERVAL 1 HOUR)
+GROUP BY module
+ORDER BY cnt DESC
+LIMIT 20
+```
+
+- **Visualization**: Table
+
+### 4. Save Dashboard
+
+- Click **Save** → Name: `Application Logs (ClickHouse Logger)`
+- Optional: set refresh to `10s`
+
+### Manual ClickHouse Verification (optional)
+
+```bash
+# Query recent logs directly
+docker exec demo-clickhouse clickhouse-client --query '
+  SELECT
+    toDateTime(ts / 1000) as time,
+    multiIf(level=0,\'debug\',level=1,\'info\',level=2,\'warn\',level=3,\'error\',\'other\') as lvl,
+    msg,
+    module
+  FROM logs.logs
+  ORDER BY ts DESC
+  LIMIT 10
+'
+
+# Count by log level in the last hour
+docker exec demo-clickhouse clickhouse-client --query '
+  SELECT
+    multiIf(level=0,\'debug\',level=1,\'info\',level=2,\'warn\',level=3,\'error\',\'other\') as lvl,
+    count() as cnt
+  FROM logs.logs
+  WHERE ts >= (now() * 1000) - (3600 * 1000)
+  GROUP BY lvl
+'
+```
 
 ## Deployment
 

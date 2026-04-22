@@ -60,6 +60,20 @@ config :logger, :default_formatter,
 # Use JSON for JSON parsing in Phoenix
 config :phoenix, :json_library, JSON
 
+# OpenTelemetry configuration
+config :opentelemetry,
+  resource: [
+    service: %{name: "demo"},
+    service_version: "0.1.0"
+  ],
+  span_processor: :batch,
+  exporter: :otlp
+
+config :opentelemetry_exporter,
+  otlp_protocol: :http_protobuf,
+  otlp_endpoint: "http://localhost:4320",
+  otlp_compression: :gzip
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
