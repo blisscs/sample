@@ -74,6 +74,26 @@ config :app, dev_routes: true
 # Do not include metadata nor timestamps in development logs
 config :logger, :default_formatter, format: "[$level] $message\n"
 
+# ClickHouse logger backend (always enabled in dev)
+config :logger,
+  backends: [:console, ClickhouseLogger]
+
+config :logger, ClickhouseLogger,
+  base_uri: "http://localhost:8124",
+  database: "logs",
+  fields: [
+    ts: :timestamp,
+    level: {App.ClickhouseLoggerHelper, :level_to_int, :uint8},
+    msg: :message,
+    module: {:meta, :module, :string},
+    function: {:meta, :function, :string},
+    file: {:meta, :file, :string},
+    line: {:meta, :line, :uint32},
+    request_id: {:meta, :request_id, :string}
+  ],
+  buffer_size: 10,
+  buffer_timeout: 1_000
+
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.
 config :phoenix, :stacktrace_depth, 20
